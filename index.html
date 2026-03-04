@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rally — Stop planning. Start going.</title>
+  <meta name="description" content="The group trip commitment engine. No more flaky friends, dead group chats, or one person doing all the work.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --white: #FFFFFF;
+      --off-white: #F8F9FB;
+      --black: #08080A;
+      --text: #111118;
+      --text-sec: #52525E;
+      --text-muted: #8E8E9A;
+      --blue: #2563EB;
+      --blue-dark: #1D4ED8;
+      --blue-light: #EFF4FF;
+      --blue-glow: rgba(37, 99, 235, 0.12);
+      --border: #E4E4EA;
+      --radius: 16px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: 'Satoshi', sans-serif;
+      background: var(--white);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,0,0,0.04);
+      transition: all 0.3s ease;
+    }
+
+    .logo {
+      font-family: 'Instrument Serif', serif;
+      font-size: 28px;
+      color: var(--black);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span {
+      color: var(--blue);
+    }
+
+    .nav-cta {
+      padding: 10px 24px;
+      background: var(--black);
+      color: var(--white);
+      border: none;
+      border-radius: 100px;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .nav-cta:hover {
+      background: var(--blue);
+      transform: translateY(-1px);
+    }
+
+    /* ─── HERO ────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      right: -200px;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, var(--blue-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -200px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(37,99,235,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: var(--blue-light);
+      border: 1px solid rgba(37,99,235,0.12);
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--blue);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--blue);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    h1 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(48px, 8vw, 88px);
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      color: var(--black);
+      max-width: 800px;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.4s forwards;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--blue);
+    }
+
+    .hero-sub {
+      font-size: clamp(17px, 2.5vw, 20px);
+      font-weight: 400;
+      color: var(--text-sec);
+      max-width: 520px;
+      line-height: 1.6;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.6s forwards;
+    }
+
+    /* ─── EMAIL FORM ─────────────────────── */
+    .email-form {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 480px;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.8s forwards;
+    }
+
+    .email-form input {
+      flex: 1;
+      padding: 16px 22px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--white);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .email-form input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .email-form input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px var(--blue-glow);
+    }
+
+    .email-form button {
+      padding: 16px 32px;
+      background: var(--blue);
+      color: var(--white);
+      border: none;
+      border-radius: 14px;
+      font-family: 'Satoshi', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .email-form button:hover {
+      background: var(--blue-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(37,99,235,0.3);
+    }
+
+    .hero-proof {
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 1s forwards;
+    }
+
+    .success-msg {
+      display: none;
+      padding: 16px 28px;
+      background: #ECFDF5;
+      border: 1px solid #A7F3D0;
+      border-radius: 14px;
+      color: #065F46;
+      font-size: 15px;
+      font-weight: 600;
+      animation: fadeUp 0.4s ease forwards;
+    }
+
+    /* ─── PAIN SECTION ────────────────────── */
+    .pain-section {
+      padding: 100px 24px;
+      background: var(--off-white);
+      border-top: 1px solid var(--border);
+    }
+
+    .pain-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 64px;
+    }
+
+    .pain-header h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 400;
+      letter-spacing: -1px;
+      color: var(--black);
+      margin-bottom: 16px;
+    }
+
+    .pain-header p {
+      font-size: 17px;
+      color: var(--text-sec);
+      line-height: 1.6;
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .pain-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 36px 28px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pain-card:hover {
+      border-color: rgba(37,99,235,0.2);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+      transform: translateY(-4px);
+    }
+
+    .pain-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .pain-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .pain-card:nth-child(1) .pain-icon { background: #FEF2F2; }
+    .pain-card:nth-child(1) .pain-icon svg { stroke: #DC2626; }
+    .pain-card:nth-child(2) .pain-icon { background: #FFFBEB; }
+    .pain-card:nth-child(2) .pain-icon svg { stroke: #D97706; }
+    .pain-card:nth-child(3) .pain-icon { background: #EFF4FF; }
+    .pain-card:nth-child(3) .pain-icon svg { stroke: #2563EB; }
+
+    .pain-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-bottom: 20px;
+      filter: saturate(0.85);
+      transition: filter 0.3s ease;
+    }
+
+    .pain-card:hover .pain-img {
+      filter: saturate(1);
+    }
+
+    .pain-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .pain-card p {
+      font-size: 14px;
+      color: var(--text-sec);
+      line-height: 1.55;
+    }
+
+    .pain-quote {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    /* ─── HOW IT WORKS ────────────────────── */
+    .how-section {
+      padding: 100px 24px;
+      background: var(--white);
+    }
+
+    .how-header {
+      text-align: center;
+      max-width: 600px;
+      margin: 0 auto 64px;
+    }
+
+    .how-header h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 400;
+      letter-spacing: -1px;
+      color: var(--black);
+      margin-bottom: 16px;
+    }
+
+    .how-header p {
+      font-size: 17px;
+      color: var(--text-sec);
+      line-height: 1.6;
+    }
+
+    .how-steps {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+    }
+
+    .how-steps::before {
+      content: '';
+      position: absolute;
+      left: 23px;
+      top: 48px;
+      bottom: 48px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--blue), var(--border));
+    }
+
+    .step {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      padding: 28px 0;
+    }
+
+    .step-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--blue);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-content h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .step-content p {
+      font-size: 15px;
+      color: var(--text-sec);
+      line-height: 1.55;
+    }
+
+    /* ─── BOTTOM CTA ─────────────────────── */
+    .bottom-cta {
+      padding: 100px 24px;
+      background: var(--black);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bottom-cta::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(37,99,235,0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .bottom-cta h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 400;
+      letter-spacing: -1px;
+      color: var(--white);
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .bottom-cta p {
+      font-size: 17px;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 40px;
+      position: relative;
+    }
+
+    .bottom-cta .email-form {
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .bottom-cta .email-form input {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.12);
+      color: var(--white);
+    }
+
+    .bottom-cta .email-form input::placeholder {
+      color: rgba(255,255,255,0.35);
+    }
+
+    .bottom-cta .email-form input:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.2);
+    }
+
+    .bottom-cta .hero-proof {
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ─── FOOTER ──────────────────────────── */
+    footer {
+      padding: 32px 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      background: var(--black);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ─── ANIMATIONS ─────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─────────────────────── */
+    @media (max-width: 768px) {
+      nav {
+        padding: 16px 20px;
+      }
+
+      .logo {
+        font-size: 24px;
+      }
+
+      .hero {
+        padding: 100px 20px 60px;
+      }
+
+      .email-form {
+        flex-direction: column;
+      }
+
+      .email-form button {
+        width: 100%;
+        text-align: center;
+      }
+
+      .pain-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .pain-section, .how-section, .bottom-cta {
+        padding: 72px 20px;
+      }
+
+      .pain-img {
+        height: 150px;
+      }
+
+      h1 {
+        letter-spacing: -1px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="logo">Rally<span>.</span></a>
+    <a href="#waitlist" class="nav-cta">Get Early Access</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Building something new</div>
+    <h1>Your group chat won't <em>get you there</em></h1>
+    <p class="hero-sub">Everyone says "I'm in." Nobody books. One person does all the work. The trip quietly dies. Rally fixes the part no app has touched: getting your crew to actually commit.</p>
+    <form class="email-form" id="heroForm" onsubmit="handleSubmit(event, 'heroForm')">
+      <input type="email" placeholder="Enter your email" required>
+      <button type="submit">Join the Waitlist</button>
+    </form>
+    <div class="success-msg" id="heroSuccess">You're in. We'll be in touch soon.</div>
+    <p class="hero-proof">Free early access. No spam. Unsubscribe anytime.</p>
+  </section>
+
+  <!-- PAIN POINTS -->
+  <section class="pain-section">
+    <div class="pain-header reveal">
+      <h2>We asked 30+ travelers what kills group trips</h2>
+      <p>The same three problems came up every single time.</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card reveal">
+        <img class="pain-img" src="https://images.pexels.com/photos/5935232/pexels-photo-5935232.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Group of friends on phones" loading="lazy">
+        <h3>Decisions by committee</h3>
+        <p>Endless back and forth in the group chat. Nobody wants to make the call. Nothing gets decided. The trip stalls before it starts.</p>
+        <div class="pain-quote">"I absolutely hate making decisions by committee. The endless back and forth where nobody wants to be the one to make a call."</div>
+      </div>
+      <div class="pain-card reveal">
+        <img class="pain-img" src="https://images.pexels.com/photos/3769138/pexels-photo-3769138.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Person planning alone at laptop" loading="lazy">
+        <h3>One person does everything</h3>
+        <p>Flights, accommodation, restaurants, activities. It all falls on one person. They burn out. The group never even notices.</p>
+        <div class="pain-quote">"I had to do everything. EVERYTHING. It was fun, but absolutely not worth the effort."</div>
+      </div>
+      <div class="pain-card reveal">
+        <img class="pain-img" src="https://images.pexels.com/photos/2767767/pexels-photo-2767767.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&fit=crop" alt="Empty airport terminal" loading="lazy">
+        <h3>People say yes, then ghost</h3>
+        <p>"100% in" turns into silence. No one officially cancels. The chat just dies. Everyone pretends it never happened.</p>
+        <div class="pain-quote">"Even that one lost 3 people between 'I'm in' and departure day."</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <div class="how-header reveal">
+      <h2>How Rally works</h2>
+      <p>We don't replace planning. We fix the human part that breaks every group trip.</p>
+    </div>
+    <div class="how-steps">
+      <div class="step reveal">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>One person starts it</h3>
+          <p>Pick a destination, dates, and rough budget. Share the link with your crew. Takes 60 seconds.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Everyone commits with skin in the game</h3>
+          <p>Each person puts down a small deposit to lock in. No more "I'm in" with zero follow-through. Money talks.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>AI builds options from everyone's input</h3>
+          <p>Preferences, budget, and availability collected async. No more 7 zoom calls. AI generates 2-3 options that actually work for the whole group.</p>
+        </div>
+      </div>
+      <div class="step reveal">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h3>Vote, lock, and go</h3>
+          <p>Group votes transparently. Trip locks in. Deposits go toward the trip fund. Now you're actually going somewhere.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM CTA -->
+  <section class="bottom-cta" id="waitlist">
+    <h2>Stop planning trips.<br>Start going on them.</h2>
+    <p>Early access launching soon. Be the first to fix group travel.</p>
+    <form class="email-form" id="bottomForm" onsubmit="handleSubmit(event, 'bottomForm')">
+      <input type="email" placeholder="Enter your email" required>
+      <button type="submit">Join the Waitlist</button>
+    </form>
+    <div class="success-msg" id="bottomSuccess" style="max-width:480px;margin:0 auto;">You're in. We'll be in touch soon.</div>
+    <p class="hero-proof" style="opacity:0;animation:fadeUp 0.8s ease 0.3s forwards;">Join 0 others on the waitlist</p>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    &copy; 2026 Rally. Built because group chats don't book flights.
+  </footer>
+
+  <script>
+    // ─── EMAIL HANDLING ──────────────────────
+    // Replace this with your actual backend endpoint (e.g. Formspree, Supabase, or custom API)
+    function handleSubmit(e, formId) {
+      e.preventDefault();
+      const form = document.getElementById(formId);
+      const email = form.querySelector('input').value;
+      const successId = formId === 'heroForm' ? 'heroSuccess' : 'bottomSuccess';
+
+      // TODO: Replace with actual API call
+      // fetch('/api/waitlist', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ email })
+      // });
+
+      console.log('Waitlist signup:', email);
+
+      // Show success
+      form.style.display = 'none';
+      document.getElementById(successId).style.display = 'block';
+    }
+
+    // ─── SCROLL REVEAL ───────────────────────
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, index * 100);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ─── SMOOTH SCROLL ───────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+
+</body>
+</html>
