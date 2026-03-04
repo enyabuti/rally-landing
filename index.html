@@ -599,11 +599,12 @@
     <div class="hero-badge">Building something new</div>
     <h1>Your group chat won't <em>get you there</em></h1>
     <p class="hero-sub">Everyone says "I'm in." Nobody books. One person does all the work. The trip quietly dies. Rally fixes the part no app has touched: getting your crew to actually commit.</p>
-    <form class="email-form" id="heroForm" onsubmit="handleSubmit(event, 'heroForm')">
-      <input type="email" placeholder="Enter your email" required>
+    <form class="email-form" id="heroForm" action="https://formspree.io/f/xjgenwyz" method="POST">
+      <input type="email" name="email" placeholder="Enter your email" required>
+      <input type="hidden" name="_subject" value="New Rally Waitlist Signup">
+      <input type="hidden" name="_next" value="https://rally-landing.vercel.app?success=true">
       <button type="submit">Join the Waitlist</button>
     </form>
-    <div class="success-msg" id="heroSuccess">You're in. We'll be in touch soon.</div>
     <p class="hero-proof">Free early access. No spam. Unsubscribe anytime.</p>
   </section>
 
@@ -677,11 +678,12 @@
   <section class="bottom-cta" id="waitlist">
     <h2>Stop planning trips.<br>Start going on them.</h2>
     <p>Early access launching soon. Be the first to fix group travel.</p>
-    <form class="email-form" id="bottomForm" onsubmit="handleSubmit(event, 'bottomForm')">
-      <input type="email" placeholder="Enter your email" required>
+    <form class="email-form" id="bottomForm" action="https://formspree.io/f/xjgenwyz" method="POST">
+      <input type="email" name="email" placeholder="Enter your email" required>
+      <input type="hidden" name="_subject" value="New Rally Waitlist Signup">
+      <input type="hidden" name="_next" value="https://rally-landing.vercel.app?success=true">
       <button type="submit">Join the Waitlist</button>
     </form>
-    <div class="success-msg" id="bottomSuccess" style="max-width:480px;margin:0 auto;">You're in. We'll be in touch soon.</div>
     <p class="hero-proof" style="opacity:0;animation:fadeUp 0.8s ease 0.3s forwards;">Join 0 others on the waitlist</p>
   </section>
 
@@ -691,28 +693,6 @@
   </footer>
 
   <script>
-    // ─── EMAIL HANDLING ──────────────────────
-    // Replace this with your actual backend endpoint (e.g. Formspree, Supabase, or custom API)
-    function handleSubmit(e, formId) {
-      e.preventDefault();
-      const form = document.getElementById(formId);
-      const email = form.querySelector('input').value;
-      const successId = formId === 'heroForm' ? 'heroSuccess' : 'bottomSuccess';
-
-      // TODO: Replace with actual API call
-      // fetch('/api/waitlist', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email })
-      // });
-
-      console.log('Waitlist signup:', email);
-
-      // Show success
-      form.style.display = 'none';
-      document.getElementById(successId).style.display = 'block';
-    }
-
     // ─── SCROLL REVEAL ───────────────────────
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry, index) => {
